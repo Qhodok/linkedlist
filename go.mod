@@ -1,3 +1,3 @@
-module permana.dev/List
+module github.com/Qhodok/linkedlist
 
-go 1.20
+go 1.21.1
