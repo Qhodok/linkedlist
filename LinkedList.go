@@ -456,7 +456,18 @@ func (this *LinkedList[Type]) Find(target string) (result bool, element Type) {
 		if this.storage != nil {
 			result, element = this.storage.Get(target)
 			if result {
-				this.AddLastOrUpdateSkipStorage(target, element, true)
+				temp := &Component{Key: target}
+				this.queue[target] = temp
+				this.container.Store(target, element)
+				if this.head == nil {
+					this.head = temp
+					this.tail = temp
+				} else {
+					this.tail.Next = temp
+					temp.Prev = this.tail
+					this.tail = temp
+				}
+				this.handleEvent(ADD, target)
 			}
 			return
 		} else {
