@@ -453,13 +453,15 @@ func (this *LinkedList[Type]) Find(target string) (result bool, element Type) {
 		element = data.(Type)
 		result = true
 	} else {
-		//fmt.Println("belum ada di list ",target,this.storage == nil)
 		if this.storage != nil {
 			element = this.storage.Get(target)
 			if element != nil {
 				this.AddLastOrUpdateSkipStorage(target, element, true)
+				result = true
 			}
-			result = true
+			return
+		} else {
+			result = false
 		}
 	}
 	return
