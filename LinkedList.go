@@ -21,12 +21,12 @@ type Event[T any] struct {
 	Event   EVENT
 }
 
-type Storage interface {
+type Storage[Type any] interface {
 	//SetAddAndDeleteFunction(add AddElement, del DeleteElement)
 	Add(key string, data []byte)
 	Delete(key string)
 	Update(key string, data []byte)
-	Get(key string) interface{}
+	Get(key string) (bool, Type)
 }
 
 type Component struct {
@@ -44,7 +44,7 @@ type LinkedList[Type any] struct {
 	tail         *Component
 	locker       sync.Mutex
 	eventChannel chan Event[Type]
-	storage      Storage
+	storage      Storage[Type]
 	totalAccess  int
 }
 
@@ -66,7 +66,7 @@ func NewList[Type any]() (linkedList LinkedList[Type]) {
 	return
 }
 
-func NewListWithStorage[Type any](storage Storage) (linkedList LinkedList[Type]) {
+func NewListWithStorage[Type any](storage Storage[Type]) (linkedList LinkedList[Type]) {
 	linkedList = LinkedList[Type]{
 		queue:   make(map[string]*Component),
 		head:    nil,
@@ -75,7 +75,7 @@ func NewListWithStorage[Type any](storage Storage) (linkedList LinkedList[Type])
 	}
 	return
 }
-func NewPointerListWithStorage[Type any](storage Storage) (linkedList *LinkedList[Type]) {
+func NewPointerListWithStorage[Type any](storage Storage[Type]) (linkedList *LinkedList[Type]) {
 	linkedList = &LinkedList[Type]{
 		queue:   make(map[string]*Component),
 		head:    nil,
@@ -454,10 +454,9 @@ func (this *LinkedList[Type]) Find(target string) (result bool, element Type) {
 		result = true
 	} else {
 		if this.storage != nil {
-			element = this.storage.Get(target)
-			if element != nil {
+			result, element = this.storage.Get(target)
+			if result {
 				this.AddLastOrUpdateSkipStorage(target, element, true)
-				result = true
 			}
 			return
 		} else {
