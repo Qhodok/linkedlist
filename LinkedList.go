@@ -467,7 +467,6 @@ func (this *LinkedList[Type]) Find(target string) (result bool, element Type) {
 					temp.Prev = this.tail
 					this.tail = temp
 				}
-				this.handleEvent(ADD, target)
 			}
 			return
 		} else {
