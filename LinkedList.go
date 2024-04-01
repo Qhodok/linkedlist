@@ -452,6 +452,17 @@ func (this *LinkedList[Type]) Find(target string) (result bool, element Type) {
 	if data, ok := this.container.Load(target); ok {
 		element = data.(Type)
 		result = true
+	} else {
+		if this.storage != nil {
+			element = this.storage.Get(target)
+			if element != nil {
+				this.AddLastOrUpdateSkipStorage(target, element, true)
+				result = true
+			}
+			return
+		} else {
+			result = false
+		}
 	}
 	return
 }
